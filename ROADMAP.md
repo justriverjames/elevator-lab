@@ -13,7 +13,7 @@ The project follows a phased approach with 3-4 incremental releases. Each versio
 
 ### Core Features
 - Single elevator in a simple building (10 floors)
-- Basic 2D visualization using HTML Canvas
+- Basic 2D visualisation using HTML Canvas
 - Manual call placement (click floor to create up/down call)
 - Simple FCFS (First-Come-First-Served) algorithm
 - Basic metrics display (average wait time, average travel time)
@@ -35,7 +35,7 @@ Validates rendering, simulation loop, and basic physics before adding complexity
 
 ## Version 0.2.0 - Multi-Elevator & Optimization
 **Status:** ✅ Complete
-**Goal:** Show optimization trade-offs
+**Goal:** Show optimisation trade-offs
 
 ### Core Features
 - 3 elevators running in parallel
@@ -63,7 +63,7 @@ Validates rendering, simulation loop, and basic physics before adding complexity
 - [ ] Add metrics comparison view (deferred to v0.3.0)
 
 ### Why Second
-This delivers the core educational value - users can finally see and interact with optimization trade-offs.
+This delivers the core educational value - users can finally see and interact with optimisation trade-offs.
 
 ---
 
@@ -132,7 +132,7 @@ Passengers make the simulation feel alive (biggest engagement win). Energy metri
   - Click elevator or call to see decision rationale tooltip
   - Show cost calculation breakdown for why elevator X picked up call Y
   - Display current elevator state (idle/moving/target)
-- **Cost breakdown visualizations:**
+- **Cost breakdown visualisations:**
   - Live chart showing cost components (wait/travel/energy/wear/fairness)
   - Per-elevator cost history graph (line chart over time)
   - Configurable time window (last 30s, 1min, 5min)
@@ -152,7 +152,7 @@ Passengers make the simulation feel alive (biggest engagement win). Energy metri
 - [ ] Add burst and event-driven traffic patterns
 
 ### Why This Version
-Builds educational value on top of working passenger system. Users can now see and understand the "why" behind optimization. Comparison mode lets users experiment with trade-offs.
+Builds educational value on top of working passenger system. Users can now see and understand the "why" behind optimisation. Comparison mode lets users experiment with trade-offs.
 
 ---
 
@@ -214,7 +214,7 @@ Makes simulation feel even more realistic. Introduces challenge (handling rush h
   - Configure floor count (5-20)
   - Configure elevator count (1-6)
   - Set floor height (visual only)
-- **Performance optimization:**
+- **Performance optimisation:**
   - Profile rendering pipeline
   - Object pooling for passengers
   - Spatial partitioning if needed
@@ -251,7 +251,7 @@ These are speculative and may never be implemented:
 ## Version History
 
 - **v0.1.0** - 2026-01-20 - Initial release with basic simulator
-- **v0.2.0** - 2026-01-20 - Multi-elevator optimization with priority sliders
+- **v0.2.0** - 2026-01-20 - Multi-elevator optimisation with priority sliders
 - **v0.3.0** - TBD - Passengers & energy physics
 - **v0.4.0** - TBD - Educational features & polish
 - **v0.5.0** - TBD - Advanced passenger AI

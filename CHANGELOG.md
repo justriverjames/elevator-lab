@@ -36,16 +36,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Technical
 - Refactored simulation to support multiple elevators
-- Added `Priorities` type for weighted optimization
+- Added `Priorities` type for weighted optimisation
 - Improved door animation system with progress tracking
-- Enhanced rendering system with shaft visualization
+- Enhanced rendering system with shaft visualisation
 
 ## [0.1.0] - 2026-01-20
 
 ### Added
 - **Basic simulator foundation**
   - Single elevator in 10-floor building
-  - Simple 2D canvas visualization
+  - Simple 2D canvas visualisation
   - Manual call placement (click to create calls)
   - FCFS (First-Come-First-Served) scheduling algorithm
   - Basic metrics: average wait time, average travel time, calls served
