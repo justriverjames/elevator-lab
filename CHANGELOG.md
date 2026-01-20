@@ -7,6 +7,81 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Passenger simulation**: Visual passengers spawn, board elevators, ride to destinations, and exit
+  - Passengers rendered as stick figures (head + body) for better visibility
+  - Up to 5 passengers shown individually, then grouped with count badge
+  - Colour-coded state indicators: blue (waiting), orange (boarding), green (exiting)
+  - Direction arrows (▲▼⇵) show passenger travel intent at each floor
+  - Lifecycle state machine: waiting → boarding → riding → exiting → arrived
+  - Passengers automatically create calls when spawned
+  - Passenger count badges on elevators show occupancy
+- **Enhanced passenger animations**: Realistic boarding/exiting behaviour
+  - Smooth fade-in when passengers spawn (0.5s transition from transparent to visible)
+  - Sequential one-by-one boarding (0.3s per passenger, not all at once)
+  - Passengers fade out as they board the elevator
+  - Queue compression: remaining passengers move closer to doors as others board
+  - Exiting passengers fade out while walking away from elevator (green colour)
+  - Passengers positioned near call buttons/elevator doors instead of far left
+- **Dynamic elevator dwell time**: Doors remain open longer based on passenger count
+  - Base dwell time: 2.0 seconds
+  - Additional time per boarding passenger: 0.3 seconds
+  - Additional time per exiting passenger: 0.2 seconds
+  - Maximum dwell time capped at 10 seconds
+  - Example: 10 passengers boarding = 2.0 + (10×0.3) = 5.0 seconds total
+- **Energy tracking system**: Real-time energy consumption monitoring
+  - Instantaneous power draw (kW) per elevator and total
+  - Cumulative energy usage (kWh) per elevator and total
+  - Physics-based calculation: mass, gravity, velocity, motor efficiency, friction
+- **Realistic elevator physics**: Weight affects performance
+  - Elevator mass (1200kg default)
+  - Passenger weight (75kg average per person)
+  - Heavier elevators accelerate slower and consume more energy
+  - Capacity limits (12 passengers max per elevator)
+- **Traffic pattern generators**: Simulate different building usage scenarios
+  - Random: uniform distribution across all floors
+  - Morning up-peak: 80% spawn at ground floor, travel to upper floors
+  - Evening down-peak: 80% spawn at upper floors, travel to ground/basement
+  - Configurable spawn rate (passengers per second)
+- **Advanced settings panel**: Collapsible UI for physics parameter tweaking
+  - Elevator mass adjustment (800-2000kg)
+  - Max capacity adjustment (6-20 passengers)
+  - Motor efficiency adjustment (50-95%)
+  - Spawn rate control (0-5 passengers/second)
+- **Configuration presets**: Quick setup for different building types
+  - Residential building: balanced priorities, random traffic
+  - Office building: wait time focused, morning up-peak traffic
+  - Hospital: fairness focused, random traffic
+  - Preset selector automatically updates all parameters
+
+### Changed
+- Acceleration now affected by total elevator weight (car + passengers)
+- Energy consumption calculated every frame based on physics
+- Spawn rate default set to 0.5 passengers/second
+- Call buttons now stay active while passengers are waiting (not just while calls are queued)
+- Improved passenger visualisation with count badges and direction indicators
+- Metrics panel now includes dedicated Passengers section
+
+### Technical
+- Added `Passenger` interface with lifecycle states
+  - Extended with `opacity`, `animationProgress`, `queuePosition` fields for animation system
+- Added `EnergyMetrics` interface for power/energy tracking
+- Extended `Elevator` type with mass, passengerCount, energy fields
+  - Extended with `boardingQueue`, `exitingQueue`, `dynamicDwellTime` for queue-based boarding
+- Extended `SimulationState` with passengers array, traffic pattern, spawn settings
+- Added `calculatePower()` function for physics-based energy calculation
+- Added `spawnPassenger()` function with traffic pattern logic
+- Added `updatePassengerAnimations()` function for fade-in/fade-out effects
+- Replaced `updatePassengers()` with queue-based sequential boarding system
+  - Builds boarding/exiting queues when doors start opening (doorProgress === 0)
+  - Processes passengers one-by-one at TIME_PER_BOARDING/TIME_PER_EXITING intervals
+  - Calculates dynamic dwell time based on passenger counts
+- Modified `updateElevator()` in physics.ts to use dynamicDwellTime instead of fixed DOOR_CLOSE_TIME
+- Added exiting passenger rendering with lerp animation (moving away from elevator while fading)
+- Added passenger rendering to canvas (before elevators layer)
+- Added animation timing constants: PASSENGER_FADE_IN_TIME, PASSENGER_FADE_OUT_TIME, TIME_PER_BOARDING, TIME_PER_EXITING, MAX_DWELL_TIME
+- Improved physics system with weight-based acceleration
+
 ## [0.2.0] - 2026-01-20
 
 ### Added

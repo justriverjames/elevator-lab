@@ -14,10 +14,15 @@ export class Renderer {
     this.height = canvas.height;
   }
 
+  private lerp(a: number, b: number, t: number): number {
+    return a + (b - a) * t;
+  }
+
   render(state: SimulationState): void {
     this.clear();
     this.drawBuilding(state);
     this.drawShafts(state);
+    this.drawPassengers(state);
     this.drawCallButtons(state);
     this.drawElevators(state);
   }
@@ -123,13 +128,23 @@ export class Renderer {
 
       // Up button (if not top floor)
       if (floor < floorCount - 1) {
-        const upActive = state.calls.some(c => c.floor === floor && c.direction === 'up');
+        // Button is active if there are waiting passengers going up
+        const upActive = state.passengers.some(p =>
+          p.state === 'waiting' &&
+          p.currentFloor === floor &&
+          p.destinationFloor > floor
+        );
         this.drawCallButton(buttonX, centerY - 12, 'up', upActive);
       }
 
       // Down button (if not ground floor)
       if (floor > 0) {
-        const downActive = state.calls.some(c => c.floor === floor && c.direction === 'down');
+        // Button is active if there are waiting passengers going down
+        const downActive = state.passengers.some(p =>
+          p.state === 'waiting' &&
+          p.currentFloor === floor &&
+          p.destinationFloor < floor
+        );
         this.drawCallButton(buttonX, centerY + 4, 'down', downActive);
       }
     }
@@ -227,6 +242,155 @@ export class Renderer {
       this.ctx.fillRect(x + 2 + doorWidth - 2, handleY - 6, 4, 12);
       this.ctx.fillRect(x + ELEVATOR_WIDTH - 2 - doorWidth - 2, handleY - 6, 4, 12);
     }
+  }
+
+  private drawPassengers(state: SimulationState): void {
+    const { floorCount } = state.building;
+
+    // Draw waiting and boarding passengers grouped by floor
+    for (let floor = 0; floor < floorCount; floor++) {
+      const passengersAtFloor = state.passengers.filter(p =>
+        (p.state === 'waiting' || p.state === 'boarding') && p.currentFloor === floor
+      );
+
+      if (passengersAtFloor.length > 0) {
+        const y = this.floorToY(floor);
+
+        // Position passengers near elevator doors, not far left
+        const shaftX = this.getShaftX(0);
+        const buttonX = shaftX - 30;
+        const waitingBaseX = buttonX - 50;
+
+        // Draw up to 5 individual passengers, then show count
+        const displayCount = Math.min(5, passengersAtFloor.length);
+        for (let i = 0; i < displayCount; i++) {
+          const passenger = passengersAtFloor[i];
+
+          // Queue compression: passengers spread out left from base position
+          const queueOffset = (passengersAtFloor.length - i - 1) * 12;
+          const x = waitingBaseX - queueOffset;
+          const passengerY = y - FLOOR_RENDER_HEIGHT / 2 - 8;
+
+          // Apply opacity for fade animations
+          const previousAlpha = this.ctx.globalAlpha;
+          this.ctx.globalAlpha = passenger.opacity;
+
+          // Person icon (head + body) - different color for boarding
+          this.ctx.fillStyle = passenger.state === 'boarding' ? '#ffaa00' : '#4a9eff';
+          // Head
+          this.ctx.beginPath();
+          this.ctx.arc(x + 4, passengerY + 3, 3, 0, Math.PI * 2);
+          this.ctx.fill();
+          // Body
+          this.ctx.fillRect(x + 1, passengerY + 6, 6, 10);
+
+          // Restore previous alpha
+          this.ctx.globalAlpha = previousAlpha;
+        }
+
+        // Show count badge
+        if (passengersAtFloor.length > 1) {
+          const rightmostQueueX = waitingBaseX - (passengersAtFloor.length - 1) * 12;
+          const badgeX = waitingBaseX + 20;
+          const badgeY = y - FLOOR_RENDER_HEIGHT / 2 - 8;
+
+          // Badge background
+          this.ctx.fillStyle = '#ff6b6b';
+          this.ctx.beginPath();
+          this.ctx.arc(badgeX, badgeY + 8, 10, 0, Math.PI * 2);
+          this.ctx.fill();
+
+          // Count text
+          this.ctx.fillStyle = '#fff';
+          this.ctx.font = 'bold 11px sans-serif';
+          this.ctx.textAlign = 'center';
+          this.ctx.fillText(`${passengersAtFloor.length}`, badgeX, badgeY + 12);
+          this.ctx.textAlign = 'left';
+        }
+
+        // Show direction indicator
+        const goingUp = passengersAtFloor.some(p => p.destinationFloor > floor);
+        const goingDown = passengersAtFloor.some(p => p.destinationFloor < floor);
+
+        if (goingUp || goingDown) {
+          const arrowX = waitingBaseX + 8;
+          const arrowY = y - FLOOR_RENDER_HEIGHT / 2 + 2;
+
+          this.ctx.fillStyle = '#888';
+          this.ctx.font = '12px monospace';
+
+          if (goingUp && goingDown) {
+            this.ctx.fillText('⇵', arrowX, arrowY);
+          } else if (goingUp) {
+            this.ctx.fillText('▲', arrowX, arrowY);
+          } else {
+            this.ctx.fillText('▼', arrowX, arrowY);
+          }
+        }
+      }
+    }
+
+    // Draw exiting passengers moving away from elevator
+    const exitingPassengers = state.passengers.filter(p => p.state === 'exiting');
+
+    for (const passenger of exitingPassengers) {
+      const floor = passenger.destinationFloor;
+      const y = this.floorToY(floor);
+
+      // Find which elevator they came from
+      const elevator = state.elevators.find(e => e.id === passenger.elevatorId);
+      if (!elevator) continue;
+
+      const elevatorIndex = state.elevators.indexOf(elevator);
+      const shaftX = this.getShaftX(elevatorIndex);
+      const doorCenterX = shaftX + SHAFT_WIDTH / 2;
+
+      // Animate moving right from elevator and fading out
+      const exitTargetX = doorCenterX + 60;
+      const x = this.lerp(doorCenterX, exitTargetX, passenger.animationProgress);
+      const passengerY = y - FLOOR_RENDER_HEIGHT / 2 - 8;
+
+      // Apply opacity for fade-out effect
+      const previousAlpha = this.ctx.globalAlpha;
+      this.ctx.globalAlpha = passenger.opacity;
+
+      // Draw passenger (green = successfully arrived)
+      this.ctx.fillStyle = '#88ff88';
+      // Head
+      this.ctx.beginPath();
+      this.ctx.arc(x + 4, passengerY + 3, 3, 0, Math.PI * 2);
+      this.ctx.fill();
+      // Body
+      this.ctx.fillRect(x + 1, passengerY + 6, 6, 10);
+
+      // Restore previous alpha
+      this.ctx.globalAlpha = previousAlpha;
+    }
+
+    // Draw passenger count in elevators
+    state.elevators.forEach((elevator, elevatorIndex) => {
+      if (elevator.passengerCount > 0) {
+        const shaftX = this.getShaftX(elevatorIndex);
+        const y = this.floorToY(elevator.position);
+
+        // Badge at top-right of elevator
+        const badgeX = shaftX + ELEVATOR_WIDTH - 12;
+        const badgeY = y - ELEVATOR_HEIGHT + 8;
+
+        // Badge background
+        this.ctx.fillStyle = '#4a9eff';
+        this.ctx.beginPath();
+        this.ctx.arc(badgeX, badgeY, 10, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        // Count text
+        this.ctx.fillStyle = '#fff';
+        this.ctx.font = 'bold 11px sans-serif';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText(`${elevator.passengerCount}`, badgeX, badgeY + 4);
+        this.ctx.textAlign = 'left';
+      }
+    });
   }
 
   private getShaftX(elevatorIndex: number): number {

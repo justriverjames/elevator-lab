@@ -135,3 +135,90 @@ input[type="range"]::-moz-range-thumb {
   color: #e0e0e0;
   font-weight: 600;
 }
+
+.control-group {
+  margin-bottom: 20px;
+}
+
+.control-group label {
+  display: block;
+  color: #888;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+select {
+  width: 100%;
+  padding: 10px;
+  background: #1a1a1a;
+  border: 1px solid #555;
+  color: #e0e0e0;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+select:focus {
+  outline: none;
+  border-color: #4a9eff;
+}
+
+#advanced {
+  background: #2a2a2a;
+  border: 1px solid #444;
+  padding: 20px;
+  border-radius: 6px;
+  margin-top: 20px;
+}
+
+.toggle-btn {
+  background: #3a3a3a;
+  color: #e0e0e0;
+  border: 1px solid #555;
+  padding: 10px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  font-size: 14px;
+}
+
+.toggle-btn:hover {
+  background: #444;
+}
+
+#advanced-panel {
+  margin-top: 12px;
+  max-height: 500px;
+  transition: max-height 0.3s ease;
+  overflow: hidden;
+}
+
+#advanced-panel.collapsed {
+  max-height: 0;
+}
+
+.setting {
+  margin-bottom: 12px;
+}
+
+.setting label {
+  display: block;
+  color: #888;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.setting input {
+  width: 100%;
+  padding: 6px;
+  background: #1a1a1a;
+  border: 1px solid #555;
+  color: #e0e0e0;
+  border-radius: 4px;
+}
+
+.setting input:focus {
+  outline: none;
+  border-color: #4a9eff;
+}

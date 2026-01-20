@@ -1,4 +1,4 @@
-import { createInitialState, addCall } from './simulation';
+import { createInitialState, addCall, spawnPassenger, updatePassengers, updatePassengerAnimations, applyPreset } from './simulation';
 import { updateElevator } from './physics';
 import { scheduleWeighted } from './scheduler';
 import { Renderer } from './rendering';
@@ -17,6 +17,10 @@ const avgWaitEl = document.getElementById('avg-wait')!;
 const avgTravelEl = document.getElementById('avg-travel')!;
 const callsServedEl = document.getElementById('calls-served')!;
 const activeCallsEl = document.getElementById('active-calls')!;
+const waitingPassengersEl = document.getElementById('waiting-passengers')!;
+const totalPassengersEl = document.getElementById('total-passengers')!;
+const powerDrawEl = document.getElementById('power-draw')!;
+const totalEnergyEl = document.getElementById('total-energy')!;
 
 // Slider elements
 const sliders = {
@@ -54,6 +58,59 @@ function setupSliders() {
 
 setupSliders();
 
+// Traffic pattern selector
+const trafficSelect = document.getElementById('traffic-pattern') as HTMLSelectElement;
+trafficSelect.addEventListener('change', () => {
+  state.trafficPattern = trafficSelect.value as 'random' | 'morning-up' | 'evening-down';
+});
+
+// Preset selector
+const presetSelect = document.getElementById('preset-selector') as HTMLSelectElement;
+presetSelect.addEventListener('change', () => {
+  if (presetSelect.value) {
+    applyPreset(state, presetSelect.value);
+    updateSlidersFromState();
+  }
+});
+
+// Advanced settings toggle
+const advancedToggle = document.getElementById('advanced-toggle')!;
+const advancedPanel = document.getElementById('advanced-panel')!;
+
+advancedToggle.addEventListener('click', () => {
+  advancedPanel.classList.toggle('collapsed');
+  advancedToggle.textContent = advancedPanel.classList.contains('collapsed')
+    ? 'Advanced Settings ▼'
+    : 'Advanced Settings ▲';
+});
+
+// Spawn rate slider
+const spawnRateInput = document.getElementById('spawn-rate') as HTMLInputElement;
+spawnRateInput.addEventListener('input', () => {
+  state.passengerSpawnRate = parseFloat(spawnRateInput.value);
+  document.getElementById('spawn-rate-value')!.textContent = spawnRateInput.value;
+});
+
+// Helper to sync UI with state
+function updateSlidersFromState(): void {
+  // Update priority sliders to match state
+  sliders.wait.value = String(state.priorities.waitTime * 100);
+  sliders.travel.value = String(state.priorities.travelTime * 100);
+  sliders.energy.value = String(state.priorities.energy * 100);
+  sliders.wear.value = String(state.priorities.wear * 100);
+  sliders.fairness.value = String(state.priorities.fairness * 100);
+
+  // Update displays
+  valueDisplays.wait.textContent = (state.priorities.waitTime).toFixed(2);
+  valueDisplays.travel.textContent = (state.priorities.travelTime).toFixed(2);
+  valueDisplays.energy.textContent = (state.priorities.energy).toFixed(2);
+  valueDisplays.wear.textContent = (state.priorities.wear).toFixed(2);
+  valueDisplays.fairness.textContent = (state.priorities.fairness).toFixed(2);
+
+  // Update traffic pattern
+  trafficSelect.value = state.trafficPattern;
+}
+
 // Click handler for placing calls
 canvas.addEventListener('click', (e) => {
   const rect = canvas.getBoundingClientRect();
@@ -82,6 +139,19 @@ function updateMetrics(): void {
 
   callsServedEl.textContent = `${metrics.callsServed}`;
   activeCallsEl.textContent = `${state.calls.length}`;
+
+  // Passenger metrics
+  const waitingPassengers = state.passengers.filter(p => p.state === 'waiting').length;
+  const totalPassengers = state.passengers.length;
+  waitingPassengersEl.textContent = `${waitingPassengers}`;
+  totalPassengersEl.textContent = `${totalPassengers}`;
+
+  // Energy metrics
+  const totalPower = state.elevators.reduce((sum, e) => sum + e.energy.instantaneousPower, 0);
+  const totalEnergy = state.elevators.reduce((sum, e) => sum + e.energy.cumulativeEnergy, 0);
+
+  powerDrawEl.textContent = `${totalPower.toFixed(1)} kW`;
+  totalEnergyEl.textContent = `${totalEnergy.toFixed(3)} kWh`;
 }
 
 function gameLoop(currentTime: number): void {
@@ -91,10 +161,25 @@ function gameLoop(currentTime: number): void {
   // Fixed timestep update
   state.time += FIXED_DT;
 
+  // Spawn passengers using accumulator pattern
+  state.spawnAccumulator += FIXED_DT;
+  const spawnInterval = 1 / state.passengerSpawnRate;
+
+  if (state.spawnAccumulator >= spawnInterval && state.passengerSpawnRate > 0) {
+    spawnPassenger(state, state.trafficPattern);
+    state.spawnAccumulator -= spawnInterval;
+  }
+
   // Update all elevators
   for (const elevator of state.elevators) {
     updateElevator(elevator, FIXED_DT);
   }
+
+  // Update passenger animations (fade in/out, queue positioning)
+  updatePassengerAnimations(state, FIXED_DT);
+
+  // Update passenger lifecycle
+  updatePassengers(state);
 
   // Schedule calls
   scheduleWeighted(state);
@@ -109,4 +194,4 @@ function gameLoop(currentTime: number): void {
 // Start
 requestAnimationFrame(gameLoop);
 
-console.log('Elevator Lab v0.2.0 - Multi-elevator optimization with priorities');
+console.log('Elevator Lab v0.3.0 - Passengers & Energy Physics');

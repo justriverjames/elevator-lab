@@ -1,5 +1,23 @@
 import type { Elevator } from './types';
-import { MAX_VELOCITY, ACCELERATION, DOOR_OPEN_TIME, DOOR_CLOSE_TIME } from './constants';
+import { MAX_VELOCITY, ACCELERATION, DOOR_OPEN_TIME, DOOR_CLOSE_TIME, BASE_DWELL_TIME, PASSENGER_WEIGHT, MOTOR_EFFICIENCY, FRICTION_COEFFICIENT, ELEVATOR_MASS } from './constants';
+
+function calculatePower(elevator: Elevator, floorHeight: number): number {
+  // If idle, return standby power
+  if (Math.abs(elevator.velocity) < 0.01) return 0.1;
+
+  // Convert velocity to m/s
+  const velocityMS = Math.abs(elevator.velocity) * floorHeight;
+
+  // Calculate mass
+  const totalMass = elevator.mass + (elevator.passengerCount * PASSENGER_WEIGHT);
+
+  // Physics: P = (m × g × v) / efficiency + friction
+  const g = 9.81;
+  const liftPower = (totalMass * g * velocityMS) / MOTOR_EFFICIENCY;
+  const frictionPower = FRICTION_COEFFICIENT * velocityMS;
+
+  return (liftPower + frictionPower) / 1000; // kW
+}
 
 export function updateElevator(elevator: Elevator, dt: number): void {
   // Handle door operations
@@ -22,7 +40,7 @@ export function updateElevator(elevator: Elevator, dt: number): void {
         elevator.doorsOpen = true;
         elevator.doorProgress = 1;
         elevator.state = 'doors-closing';
-        elevator.doorTimer = DOOR_CLOSE_TIME;
+        elevator.doorTimer = elevator.dynamicDwellTime || DOOR_CLOSE_TIME;
       } else {
         elevator.doorsOpen = false;
         elevator.doorProgress = 0;
@@ -48,6 +66,7 @@ export function updateElevator(elevator: Elevator, dt: number): void {
     elevator.velocity = 0;
     elevator.state = 'doors-opening';
     elevator.doorTimer = DOOR_OPEN_TIME;
+    elevator.dynamicDwellTime = BASE_DWELL_TIME;
     elevator.targetFloor = null;
     return;
   }
@@ -57,8 +76,11 @@ export function updateElevator(elevator: Elevator, dt: number): void {
 
   // Decide whether to accelerate or decelerate
   if (Math.abs(distanceToTarget) > stoppingDistance && Math.abs(elevator.velocity) < MAX_VELOCITY) {
-    // Accelerate
-    elevator.velocity += direction * ACCELERATION * dt;
+    // Accelerate (adjusted for weight)
+    const totalMass = elevator.mass + (elevator.passengerCount * PASSENGER_WEIGHT);
+    const massRatio = totalMass / ELEVATOR_MASS;
+    const adjustedAcceleration = ACCELERATION / massRatio;
+    elevator.velocity += direction * adjustedAcceleration * dt;
     elevator.velocity = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, elevator.velocity));
   } else {
     // Decelerate
@@ -79,4 +101,8 @@ export function updateElevator(elevator: Elevator, dt: number): void {
       (direction < 0 && elevator.position < elevator.targetFloor)) {
     elevator.position = elevator.targetFloor;
   }
+
+  // Calculate and accumulate energy
+  elevator.energy.instantaneousPower = calculatePower(elevator, 3.0);
+  elevator.energy.cumulativeEnergy += (elevator.energy.instantaneousPower * dt) / 3600; // kWh
 }

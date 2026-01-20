@@ -1,12 +1,37 @@
+export interface EnergyMetrics {
+  instantaneousPower: number;  // kW
+  cumulativeEnergy: number;    // kWh
+}
+
 export interface Elevator {
   id: string;
-  position: number; // 0 = ground floor, floors are integers
-  velocity: number; // floors per second
+  position: number;
+  velocity: number;
   targetFloor: number | null;
   doorsOpen: boolean;
-  doorTimer: number; // seconds remaining for door operation
-  doorProgress: number; // 0 = closed, 1 = fully open
+  doorTimer: number;
+  doorProgress: number;
   state: 'idle' | 'moving' | 'doors-opening' | 'doors-closing';
+  mass: number;
+  passengerCount: number;
+  energy: EnergyMetrics;
+  boardingQueue: string[];
+  exitingQueue: string[];
+  dynamicDwellTime: number;
+}
+
+export interface Passenger {
+  id: string;
+  currentFloor: number;
+  destinationFloor: number;
+  state: 'waiting' | 'boarding' | 'riding' | 'exiting' | 'arrived';
+  spawnedAt: number;
+  boardedAt?: number;
+  arrivedAt?: number;
+  elevatorId?: string;
+  opacity: number;
+  animationProgress: number;
+  queuePosition?: number;
 }
 
 export interface Call {
@@ -35,6 +60,10 @@ export interface SimulationState {
   metrics: Metrics;
   time: number; // simulation time in seconds
   priorities: Priorities;
+  passengers: Passenger[];
+  trafficPattern: 'random' | 'morning-up' | 'evening-down';
+  passengerSpawnRate: number;
+  spawnAccumulator: number;
 }
 
 export interface Priorities {
