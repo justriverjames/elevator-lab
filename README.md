@@ -14,34 +14,31 @@ Think of it as a playground for understanding how competing objectives create tr
 
 Or just open `index.html` locally in your browser.
 
-## Features (Planned)
+## Features
 
 This project follows a phased roadmap. See [ROADMAP.md](ROADMAP.md) for full details.
 
-**Version 0.1.0 - Basic Simulator** (In Development)
-- Single elevator, 8-10 floors
-- Simple 2D visualization
-- Manual call placement
-- FCFS algorithm
-- Basic metrics
+**Version 0.2.0 - Multi-Elevator & Optimization** ✅ Complete
+- 3 elevators running in parallel
+- Five adjustable priority sliders (Wait Time, Travel Time, Energy, Wear & Tear, Fairness)
+- Weighted cost function scheduler
+- 11-floor building (B1 basement parking + G ground + floors 1-9)
+- Enhanced visuals: building facade, animated doors, visible cables, call buttons
+- Real-time metrics tracking
 
-**Version 0.2.0 - Multi-Elevator & Optimization**
-- 2-4 elevators
-- Five adjustable priority sliders
-- Multiple traffic patterns
-- Real-time trade-off visualization
-
-**Version 0.3.0 - Educational Features**
+**Version 0.3.0 - Educational Features** (Planned)
 - Click to see decision rationale
 - Multiple view modes (building, floor, elevator, x-ray)
 - Configuration presets (residential, office, hospital)
 - Cost breakdown visualizations
+- Passenger simulation with realistic traffic patterns
 
-**Version 0.4.0 - Polish & Extensions** (Optional)
+**Version 0.4.0 - Polish & Extensions** (Planned)
 - Replay/scenario comparison
 - Custom building editor
 - Shareable configurations
 - Mobile-responsive
+- Advanced passenger AI with peak time modeling
 
 ## Quick Start
 
@@ -50,14 +47,13 @@ This project follows a phased roadmap. See [ROADMAP.md](ROADMAP.md) for full det
 git clone https://github.com/justriverjames/elevator-lab.git
 cd elevator-lab
 
-# Install dependencies (if using TypeScript build)
+# Install dependencies
 npm install
 
-# Build (if needed)
-npm run build
+# Run dev server
+npm run dev
 
-# Open in browser
-open index.html
+# Open browser to http://localhost:5173
 ```
 
 ## Tech Stack
@@ -80,9 +76,9 @@ By making these trade-offs tangible and interactive, Elevator Lab helps you buil
 
 ## Development Status
 
-Currently working on **v0.1.0** - building the foundational simulator and visualization.
+**v0.2.0** complete - Multi-elevator optimization with priority sliders is working!
 
-See [ROADMAP.md](ROADMAP.md) for detailed version breakdown and task lists.
+See [ROADMAP.md](ROADMAP.md) for detailed version breakdown and [CHANGELOG.md](CHANGELOG.md) for version history.
 
 ## License
 

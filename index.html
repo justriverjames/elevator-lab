@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elevator Lab</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>Elevator Lab</h1>
+      <p>Click call buttons on the left to request elevators</p>
+    </header>
+
+    <div id="container">
+      <div id="controls">
+        <h3>Optimization Priorities</h3>
+        <div class="slider-group">
+          <label>
+            <span>Wait Time</span>
+            <input type="range" id="priority-wait" min="0" max="100" value="50">
+            <span class="value" id="value-wait">0.50</span>
+          </label>
+        </div>
+        <div class="slider-group">
+          <label>
+            <span>Travel Time</span>
+            <input type="range" id="priority-travel" min="0" max="100" value="30">
+            <span class="value" id="value-travel">0.30</span>
+          </label>
+        </div>
+        <div class="slider-group">
+          <label>
+            <span>Energy</span>
+            <input type="range" id="priority-energy" min="0" max="100" value="10">
+            <span class="value" id="value-energy">0.10</span>
+          </label>
+        </div>
+        <div class="slider-group">
+          <label>
+            <span>Wear & Tear</span>
+            <input type="range" id="priority-wear" min="0" max="100" value="5">
+            <span class="value" id="value-wear">0.05</span>
+          </label>
+        </div>
+        <div class="slider-group">
+          <label>
+            <span>Fairness</span>
+            <input type="range" id="priority-fairness" min="0" max="100" value="5">
+            <span class="value" id="value-fairness">0.05</span>
+          </label>
+        </div>
+      </div>
+
+      <canvas id="canvas"></canvas>
+
+      <div id="metrics">
+        <h3>Metrics</h3>
+        <div class="metric">
+          <span>Avg Wait Time:</span>
+          <span id="avg-wait">-</span>
+        </div>
+        <div class="metric">
+          <span>Avg Travel Time:</span>
+          <span id="avg-travel">-</span>
+        </div>
+        <div class="metric">
+          <span>Calls Served:</span>
+          <span id="calls-served">0</span>
+        </div>
+        <div class="metric">
+          <span>Active Calls:</span>
+          <span id="active-calls">0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
