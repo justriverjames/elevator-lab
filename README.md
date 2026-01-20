@@ -26,19 +26,32 @@ This project follows a phased roadmap. See [ROADMAP.md](ROADMAP.md) for full det
 - Enhanced visuals: building facade, animated doors, visible cables, call buttons
 - Real-time metrics tracking
 
-**Version 0.3.0 - Educational Features** (Planned)
-- Click to see decision rationale
-- Multiple view modes (building, floor, elevator, x-ray)
-- Configuration presets (residential, office, hospital)
-- Cost breakdown visualizations
-- Passenger simulation with realistic traffic patterns
+**Version 0.3.0 - Passengers & Energy Physics** (In Progress)
+- Passenger simulation: visual passengers spawn, board elevators, ride to destinations
+- Energy tracking: real-time power draw (kW) and cumulative usage (kWh) per elevator + total
+- Realistic physics: elevator weight/mass, passenger weight impacts, capacity limits
+- Advanced settings: collapsible panel for tweaking physics parameters
+- Traffic patterns: random, morning up-peak, evening down-peak
+- Configuration presets: residential, office, hospital buildings
 
-**Version 0.4.0 - Polish & Extensions** (Planned)
+**Version 0.4.0 - Educational Features** (Planned)
+- Explanation layer: click to see decision rationale
+- Cost breakdown visualizations
+- Metrics comparison view
+- Additional traffic patterns
+
+**Version 0.5.0 - Advanced Passenger AI** (Planned)
+- Peak time modeling with configurable rush hours
+- Destination probability based on building type
+- Passenger frustration indicators
+- Realistic variability with statistical distributions
+
+**Version 0.6.0 - Production Polish** (Optional)
 - Replay/scenario comparison
+- Shareable configurations via URL
+- Mobile-responsive layout
 - Custom building editor
-- Shareable configurations
-- Mobile-responsive
-- Advanced passenger AI with peak time modeling
+- Performance optimization
 
 ## Quick Start
 
