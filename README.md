@@ -8,11 +8,23 @@ Elevator Lab is an educational web app that lets you explore the complex optimiz
 
 Think of it as a playground for understanding how competing objectives create trade-offs - faster service vs. energy efficiency, fairness vs. throughput, predictive routing vs. reactive control.
 
-## Live Demo
+## Quick Start
 
-**[elevator-lab.justriverjames.com](https://elevator-lab.justriverjames.com)** *(coming soon)*
+```bash
+# Clone the repository
+git clone https://github.com/justriverjames/elevator-lab.git
+cd elevator-lab
 
-Or just open `index.html` locally in your browser.
+# Install dependencies
+npm install
+
+# Run dev server
+npm run dev
+
+# Open browser to http://localhost:5173
+```
+
+Or download the repo and open `index.html` directly in your browser (after building).
 
 ## Features
 
@@ -53,22 +65,6 @@ This project follows a phased roadmap. See [ROADMAP.md](ROADMAP.md) for full det
 - Custom building editor
 - Performance optimization
 
-## Quick Start
-
-```bash
-# Clone the repository
-git clone https://github.com/justriverjames/elevator-lab.git
-cd elevator-lab
-
-# Install dependencies
-npm install
-
-# Run dev server
-npm run dev
-
-# Open browser to http://localhost:5173
-```
-
 ## Tech Stack
 
 - **TypeScript** - Type-safe code with build step
@@ -93,10 +89,14 @@ By making these trade-offs tangible and interactive, Elevator Lab helps you buil
 
 See [ROADMAP.md](ROADMAP.md) for detailed version breakdown and [CHANGELOG.md](CHANGELOG.md) for version history.
 
+## Support
+
+If you find this project useful, consider [sponsoring on GitHub](https://github.com/sponsors/justriverjames) to support continued development.
+
 ## License
 
-MIT License - see LICENSE file for details
+MIT License - see [LICENSE](LICENSE) for details
 
 ---
 
-Built by [River](https://github.com/justriverjames) as an educational project for exploring optimization trade-offs.
+Built by [River](https://github.com/justriverjames) • [GitHub](https://github.com/justriverjames) • [Sponsor ❤️](https://github.com/sponsors/justriverjames)
